@@ -11,22 +11,11 @@ const cors = require("cors");
 app.use(bodyParser.json());
 app.use(cors());
 
-let ids=[];
-data.map(eachInformation => ids.push(Number(eachInformation.id)));
 
-app.get("/", function (request, response) {
-console.log(ids)
-response.send('Ellie your server is working :)')
+app.get("/", function (req, res) {
+res.send('Ellie your server is working :)')
 });
 
-// increase id
-const getRandomId = (arr) => {
-  const randomId = Math.floor(Math.random() * (2 * data.length) + 6);
-   if(arr.includes(randomId)){
-    getRandomId(arr);
-  }
-  return randomId
-} 
 
 // Read all messages
 app.get("/messages", function (req, res) {
@@ -53,6 +42,15 @@ app.get("/messages/latest", (req, res) => {
     res.json("Sorry,you do not have enough message");
   }
 });
+
+// increase id
+const getRandomId = (arr) => {
+  const randomId = Math.floor(Math.random() * (2 * data.length) + 6);
+   if(arr.includes(randomId)){
+    getRandomId(arr);
+  }
+  return randomId
+} 
 
 // Create a new message
 app.post("/messages/newMessage", (req, res) => {
