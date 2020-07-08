@@ -46,7 +46,7 @@ app.get("/messages/latest", (req, res) => {
 // increase id
 const getRandomId = (arr) => {
   const randomId = Math.floor(Math.random() * (2 * data.length) + 6);
-   if(arr.includes(randomId)){
+   if(arr.id.includes(randomId)){
     getRandomId(arr);
   }
   return randomId
@@ -55,8 +55,6 @@ const getRandomId = (arr) => {
 // Create a new message
 app.post("/messages/newMessage", (req, res) => {
   // level 2
-  console.log('body ', req.body)
-  console.log(req.body.from)
   if (req.body.from === "" || req.body.text === "") {
     res
       .status(400)
@@ -92,6 +90,18 @@ app.delete("/messages/:id", (req, res) => {
 
 // level 5
 // add level 5 (put request)
+app.put("/messages/:id",(req,res) => {
+  const {id} = (req.params);
+  const existingMessage = data.find(message => message.id === id)
+  if(existingMessage){
+    existingMessage.text = req.body.text;
+    existingMessage.from = req.body.from;
+    res.json("your changes were successful")
+  }
+  else{
+    res.send(404).status("oops! something went wrong! :(")
+  }
+})
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
