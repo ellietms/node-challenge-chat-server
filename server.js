@@ -16,7 +16,7 @@ data.map(eachInformation => ids.push(Number(eachInformation.id)));
 
 app.get("/", function (request, response) {
 console.log(ids)
-response.send('it is working')
+response.send('Ellie your server is working :)')
 });
 
 // increase id
