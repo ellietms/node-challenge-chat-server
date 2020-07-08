@@ -2,15 +2,31 @@ const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
 const data = require("./data.json");
+const cors = require("cors");
 
 // what you need to expect to understand client content
-// app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+// app.use(bodyParser.urlencoded({ extended: true }));
 // app.use(bodyParser.raw());
 
+app.use(bodyParser.json());
+app.use(cors());
+
+let ids=[];
+data.map(eachInformation => ids.push(Number(eachInformation.id)));
+
 app.get("/", function (request, response) {
-  response.sendFile(__dirname + "/index.html");
+console.log(ids)
+response.send('it is working')
 });
+
+// increase id
+const getRandomId = (arr) => {
+  const randomId = Math.floor(Math.random() * (2 * data.length) + 6);
+   if(arr.includes(randomId)){
+    getRandomId(arr);
+  }
+  return randomId
+} 
 
 // Read all messages
 app.get("/messages", function (req, res) {
@@ -41,6 +57,8 @@ app.get("/messages/latest", (req, res) => {
 // Create a new message
 app.post("/messages/newMessage", (req, res) => {
   // level 2
+  console.log('body ', req.body)
+  console.log(req.body.from)
   if (req.body.from === "" || req.body.text === "") {
     res
       .status(400)
@@ -49,7 +67,7 @@ app.post("/messages/newMessage", (req, res) => {
     // Here
     //question:
     //  if I want to have new id after those information I added to my data, how can I arrange my next id to be after this id I added(sorted ones)
-    const randomId = Math.floor(Math.random() * (2 * data.length) + 6);
+    let randomId = getRandomId(data);
     data.push({
       id: randomId,
       from: req.body.from,
