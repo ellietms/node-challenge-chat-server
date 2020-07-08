@@ -45,11 +45,16 @@ app.get("/messages/latest", (req, res) => {
 
 // increase id
 const getRandomId = (arr) => {
-  const randomId = Math.floor(Math.random() * (2 * data.length) + 6);
-   if(arr.id.includes(randomId)){
-    getRandomId(arr);
+  return Math.floor((Math.random() * (arr.length)) + arr.length);
+}    
+const NewId = (arr) => {
+  let randomId = getRandomId(arr);
+   if(arr.includes(randomId.toString())){
+    getRandomId(arr)
   }
-  return randomId
+  else{
+    return randomId;
+  }
 } 
 
 // Create a new message
@@ -63,13 +68,14 @@ app.post("/messages/newMessage", (req, res) => {
     // Here
     //question:
     //  if I want to have new id after those information I added to my data, how can I arrange my next id to be after this id I added(sorted ones)
-    let randomId = getRandomId(data);
+    let randomId = NewId(data);
     data.push({
       id: randomId,
       from: req.body.from,
       text: req.body.text,
       timeSent: new Date(),
     });
+    console.log(randomId);
     res.json(data);
   }
 });
