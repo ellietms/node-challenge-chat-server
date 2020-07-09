@@ -57,7 +57,7 @@ app.post("/messages/newMessage", (req, res) => {
       .json("Bad request,Please make sure all fields are filled in correctly");
   }
   else {
-    let id = NewId(data);
+    let id = NewId(data).toString();
     data.push({
       id: id,
       from: req.body.from,
