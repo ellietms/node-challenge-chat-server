@@ -24,7 +24,7 @@ app.get("/messages", function (req, res) {
 app.post("/messages/search", (req, res) => {
   const text = `${req.query.text.toLowerCase()}`;
   const messageWithSpecificText = data.filter((message) =>
-    message.text.toLowerCase().includes(text)
+  message.text.toLowerCase().includes(text)
   );
   res.json(messageWithSpecificText);
 });
@@ -34,25 +34,19 @@ app.get("/messages/latest", (req, res) => {
   if (data.length >= 10) {
     const latestMessages = data.slice(data.length - 10, data.length + 1);
     res.json(latestMessages);
-  } else if (data.length < 10) {
+  } 
+  else if (data.length < 10) {
     res.json(data);
-  } else {
+  } 
+  else {
     res.json("Sorry,you do not have enough message");
   }
 });
 
 // increase id
-const getRandomId = (arr) => {
-  return Math.floor(Math.random() * arr.length + arr.length).toString();
-};
-const NewId = (arr) => {
-  let randomId = getRandomId(arr);
-  if (arr.includes(randomId.toString())) {
-    getRandomId(arr);
-  } else {
-    return randomId;
-  }
-};
+function NewId(arr) {
+  return Math.max(...arr) + 1;
+}
 
 // Create a new message
 app.post("/messages/newMessage", (req, res) => {
@@ -61,13 +55,11 @@ app.post("/messages/newMessage", (req, res) => {
     res
       .status(400)
       .json("Bad request,Please make sure all fields are filled in correctly");
-  } else {
-    // Here
-    //question:
-    //  if I want to have new id after those information I added to my data, how can I arrange my next id to be after this id I added(sorted ones)
-    let randomId = NewId(data);
+  }
+  else {
+    let id = NewId(data);
     data.push({
-      id: randomId,
+      id: id,
       from: req.body.from,
       text: req.body.text,
       timeSent: new Date(),
@@ -86,7 +78,7 @@ app.get("/messages/:id", (req, res) => {
 // Delete a message by Id
 app.delete("/messages/:id", (req, res) => {
   const { id } = req.params;
-  console.log("the id is :", id,typeof id , JSON.stringify(data))
+  console.log("the id is :", id, typeof id, JSON.stringify(data));
   data = data.filter((message) => message.id !== id);
   res.json(data);
 });
