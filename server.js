@@ -86,8 +86,9 @@ app.get("/messages/:id", (req, res) => {
 // Delete a message by Id
 app.delete("/messages/:id", (req, res) => {
   const { id } = req.params;
-  const messageWithSpecificId = data.filter((message) => message.id !== id);
-  res.json(messageWithSpecificId);
+  console.log("the id is :", id,typeof id , JSON.stringify(data))
+  data = data.filter((message) => message.id !== id);
+  res.json(data);
 });
 
 // level 5
