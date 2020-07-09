@@ -43,7 +43,7 @@ app.get("/messages/latest", (req, res) => {
 
 // increase id
 const getRandomId = (arr) => {
-  return Math.floor(Math.random() * arr.length + arr.length);
+  return Math.floor(Math.random() * arr.length + arr.length).toString();
 };
 const NewId = (arr) => {
   let randomId = getRandomId(arr);
