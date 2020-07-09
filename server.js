@@ -11,11 +11,9 @@ const cors = require("cors");
 app.use(bodyParser.json());
 app.use(cors());
 
-
 app.get("/", function (req, res) {
-res.send('Ellie your server is working :)')
+  res.send("Ellie your server is working :)");
 });
-
 
 // Read all messages
 app.get("/messages", function (req, res) {
@@ -45,17 +43,16 @@ app.get("/messages/latest", (req, res) => {
 
 // increase id
 const getRandomId = (arr) => {
-  return Math.floor((Math.random() * (arr.length)) + arr.length);
-}    
+  return Math.floor(Math.random() * arr.length + arr.length);
+};
 const NewId = (arr) => {
   let randomId = getRandomId(arr);
-   if(arr.includes(randomId.toString())){
-    getRandomId(arr)
-  }
-  else{
+  if (arr.includes(randomId.toString())) {
+    getRandomId(arr);
+  } else {
     return randomId;
   }
-} 
+};
 
 // Create a new message
 app.post("/messages/newMessage", (req, res) => {
@@ -75,7 +72,6 @@ app.post("/messages/newMessage", (req, res) => {
       text: req.body.text,
       timeSent: new Date(),
     });
-    console.log(randomId);
     res.json(data);
   }
 });
@@ -96,18 +92,17 @@ app.delete("/messages/:id", (req, res) => {
 
 // level 5
 // add level 5 (put request)
-app.put("/messages/:id",(req,res) => {
-  const {id} = (req.params);
-  const existingMessage = data.find(message => message.id === id)
-  if(existingMessage){
+app.put("/messages/:id", (req, res) => {
+  const { id } = req.params;
+  const existingMessage = data.find((message) => message.id === id);
+  if (existingMessage) {
     existingMessage.text = req.body.text;
     existingMessage.from = req.body.from;
-    res.json("your changes were successful")
+    res.json("your changes were successful");
+  } else {
+    res.send(404).status("oops! something went wrong! :(");
   }
-  else{
-    res.send(404).status("oops! something went wrong! :(")
-  }
-})
+});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

@@ -3,25 +3,5 @@
         "id":"1",
        "from":"Ellie",
        "text":"Welcome to CYF chat system!"
-    },
-    {
-        "id":"2",
-       "from":"Lucy",
-       "text":"Welcome to CYF chat system!"
-    },
-    {
-        "id":"3",
-       "from":"Oliver",
-       "text":"Welcome to CYF chat system!"
-    },
-    {
-        "id":"4",
-       "from":"Henry",
-       "text":"Welcome to CYF chat system!"
-    },
-    {
-       "id":"5",
-       "from":"Ava",
-       "text":"Welcome to CYF chat system!"
     }
     ]
