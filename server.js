@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
-const data = require("./data.json");
+let data = require("./data.json");
 const cors = require("cors");
 
 // what you need to expect to understand client content
