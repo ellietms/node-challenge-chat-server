@@ -87,13 +87,14 @@ app.delete("/messages/:id", (req, res) => {
 // level 5
 // add level 5 (put request)
 app.put("/messages/:id", (req, res) => {
-  const { id } = req.params;
-  const existingMessage = data.find((message) => message.id === id);
-  if (existingMessage) {
-    existingMessage.text = req.body.text;
-    existingMessage.from = req.body.from;
+  const {id} = req.params;
+  data = data.find((message) => message.id === id);
+  if(data) {
+    data.text = req.body.text;
+    data.from = req.body.from;
     res.json("your changes were successful");
-  } else {
+  } 
+  else {
     res.send(404).status("oops! something went wrong! :(");
   }
 });
@@ -102,4 +103,4 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server started on port: ${PORT}`);
 });
-// ellie
+
