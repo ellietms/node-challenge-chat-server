@@ -45,7 +45,12 @@ app.get("/messages/latest", (req, res) => {
 
 // increase id
 function NewId(arr) {
+  if(arr.length !== 0){
   return Math.max(...Object.values(arr.map((e) => e.id))) + 1;
+  }
+  else{
+    return ""
+  }
 }
 
 // Create a new message
