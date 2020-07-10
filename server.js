@@ -43,7 +43,7 @@ app.get("/messages/latest", (req, res) => {
 
 // increase id
 function NewId(arr) {
-  return Math.max(...arr) + 1;
+  return Math.max(...Object.values(arr.map(e => e.id))) + 1;
 }
 
 // Create a new message
@@ -62,6 +62,7 @@ app.post("/messages/newMessage", (req, res) => {
       timeSent: new Date(),
     });
     res.json(data);
+    console.log(data);
   }
 });
 
