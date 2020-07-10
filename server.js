@@ -20,12 +20,11 @@ app.get("/messages", function (req, res) {
   res.json(data);
 });
 
-
 // level 3
 app.post("/messages/search", (req, res) => {
   const text = `${req.query.text.toLowerCase()}`;
   const messageWithSpecificText = data.filter((message) =>
-  message.text.toLowerCase().includes(text)
+    message.text.toLowerCase().includes(text)
   );
   res.json(messageWithSpecificText);
 });
@@ -35,18 +34,16 @@ app.get("/messages/latest", (req, res) => {
   if (data.length >= 10) {
     const latestMessages = data.slice(data.length - 10, data.length + 1);
     res.json(latestMessages);
-  } 
-  else if (data.length < 10) {
+  } else if (data.length < 10) {
     res.json(data);
-  } 
-  else {
+  } else {
     res.json("Sorry,you do not have enough message");
   }
 });
 
 // increase id
 function NewId(arr) {
-  return Math.max(...arr) + 1;
+  return Math.max(arr.length) + 1;
 }
 
 // Create a new message
@@ -56,8 +53,7 @@ app.post("/messages/newMessage", (req, res) => {
     res
       .status(400)
       .json("Bad request,Please make sure all fields are filled in correctly");
-  }
-  else {
+  } else {
     let id = NewId(data).toString();
     data.push({
       id: id,
@@ -87,14 +83,13 @@ app.delete("/messages/:id", (req, res) => {
 // level 5
 // add level 5 (put request)
 app.put("/messages/:id", (req, res) => {
-  const {id} = req.params;
-  data = data.find((message) => message.id === id);
-  if(data) {
-    data.text = req.body.text;
-    data.from = req.body.from;
+  const { id } = req.params;
+  let updateData = data.find((message) => message.id === id);
+  if (updateData) {
+    updateData.text = req.body.text;
+    updateData.from = req.body.from;
     res.json("your changes were successful");
-  } 
-  else {
+  } else {
     res.send(404).status("oops! something went wrong! :(");
   }
 });
@@ -103,4 +98,3 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server started on port: ${PORT}`);
 });
-
