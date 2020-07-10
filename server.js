@@ -92,7 +92,7 @@ app.put("/messages/:id", (req, res) => {
   if (updateData) {
     updateData.text = req.body.text;
     updateData.from = req.body.from;
-    res.json("your changes were successful");
+    res.json(data);
   }
   else {
     res.send(404).status("oops! something went wrong! :(");
