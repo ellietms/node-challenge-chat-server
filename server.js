@@ -45,9 +45,7 @@ app.get("/messages/latest", (req, res) => {
 function NewId(arr) {
   if (arr.length !== 0) {
     return Math.max(...Object.values(arr.map((e) => e.id))) + 1;
-  } else {
-    return "";
-  }
+  } 
 }
 
 // Create a new message
@@ -58,6 +56,7 @@ app.post("/messages/newMessage", (req, res) => {
       .status(400)
       .json("Bad request,Please make sure all fields are filled in correctly");
   } else {
+    if()
     let id = NewId(data).toString();
     data.push({
       id: id,
