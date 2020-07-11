@@ -34,22 +34,19 @@ app.get("/messages/latest", (req, res) => {
   if (data.length >= 10) {
     const latestMessages = data.slice(data.length - 10, data.length + 1);
     res.json(latestMessages);
-  } 
-  else if (data.length < 10) {
+  } else if (data.length < 10) {
     res.json(data);
-  } 
-  else {
+  } else {
     res.json("Sorry,you do not have enough message");
   }
 });
 
 // increase id
 function NewId(arr) {
-  if(arr.length !== 0){
-  return Math.max(...Object.values(arr.map((e) => e.id))) + 1;
-  }
-  else{
-    return ""
+  if (arr.length !== 0) {
+    return Math.max(...Object.values(arr.map((e) => e.id))) + 1;
+  } else {
+    return "";
   }
 }
 
@@ -60,8 +57,7 @@ app.post("/messages/newMessage", (req, res) => {
     res
       .status(400)
       .json("Bad request,Please make sure all fields are filled in correctly");
-  } 
-  else {
+  } else {
     let id = NewId(data).toString();
     data.push({
       id: id,
@@ -98,8 +94,7 @@ app.put("/messages/:id", (req, res) => {
     updateData.text = req.body.text;
     updateData.from = req.body.from;
     res.json(data);
-  }
-  else {
+  } else {
     res.send(404).status("oops! something went wrong! :(");
   }
 });
