@@ -45,8 +45,7 @@ app.get("/messages/latest", (req, res) => {
 function NewId(arr) {
   if (arr.length !== 0) {
     return Math.max(...Object.values(arr.map((e) => e.id))) + 1;
-  } 
-  else{
+  } else {
     return 0;
   }
 }
