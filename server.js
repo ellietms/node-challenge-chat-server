@@ -11,6 +11,14 @@ app.use(cors());
 // what you need to expect to understand client content
 // app.use(bodyParser.urlencoded({ extended: true }));
 // app.use(bodyParser.raw());
+// increase id
+// function NewId(arr) {
+//   if (arr.length !== 0) {
+//     return Math.max(...Object.values(arr.map((e) => e.id))) + 1;
+//   } else {
+//     return 0;
+//   }
+// }
 
 app.get("/", function (request, response) {
   const client = new mongodb.MongoClient(uri);
@@ -82,15 +90,6 @@ app.get("/messages/latest", (request, response) => {
   });
 });
 
-// increase id
-// function NewId(arr) {
-//   if (arr.length !== 0) {
-//     return Math.max(...Object.values(arr.map((e) => e.id))) + 1;
-//   } else {
-//     return 0;
-//   }
-// }
-
 // Create a new message
 app.post("/messages/newMessage", (request, response) => {
   const client = new mongodb.MongoClient(uri);
@@ -100,7 +99,7 @@ app.post("/messages/newMessage", (request, response) => {
     const message = {
       from: request.body.from,
       text: request.body.text,
-      timeSent: new Date(),
+      timeSent: new Date()
     };
     collection.insertOne(message, (error, data) => {
       if (request.body.from === "" || request.body.text === "") {
@@ -110,20 +109,47 @@ app.post("/messages/newMessage", (request, response) => {
             "Bad request,Please make sure all fields are filled in correctly"
           );
         client.close();
-      } else if (error) {
+      }
+      else if (error) {
         response.send(error);
-      } else {
+        client.close();
+      }
+      else {
         response.send(data.ops[0]);
         client.close();
       }
     });
   });
 });
+
 // read one message specified by an Id
-app.get("/messages/:id", (req, res) => {
-  const { id } = req.params;
-  const messageWithSpecificId = data.filter((message) => message.id === id);
-  res.json(messageWithSpecificId);
+app.get("/messages/:id", (request, response) => {
+  const client = new mongodb.MongoClient(uri);
+  client.connect(() => {
+    const db = client.db("chat");
+    const collection = db.collection("messages");
+    const { id } = request.params;
+    let newId;
+    if(mongodb.ObjectID.isValid(id)){
+     newId = mongodb.ObjectID(id);
+     console.log("TYPE",typeof newId);
+     collection.findOne({_id:newId},(error,data) => {
+      if(error){
+        response.send(error);
+        client.close();
+      }
+      else{
+        console.log("DATA" , data)
+        response.send(data);
+        client.close();
+      }
+    })
+  }
+  else{
+    response.send("Id is not Valid");
+    client.close();
+  }
+  })
 });
 
 // Delete a message by Id
