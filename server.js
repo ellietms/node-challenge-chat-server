@@ -11,6 +11,7 @@ app.use(cors());
 // what you need to expect to understand client content
 // app.use(bodyParser.urlencoded({ extended: true }));
 // app.use(bodyParser.raw());
+
 // increase id
 // function NewId(arr) {
 //   if (arr.length !== 0) {
