@@ -1,15 +1,16 @@
-require("dotenv").config;
+const dotenv =require("dotenv");
 const express = require("express");
 const app = express();
-const bodyParser = require("body-parser");
+// const bodyParser = require("body-parser");
 const cors = require("cors");
 const mongodb = require("mongodb");
+dotenv.config();
 const uri =process.env.DATABASE_URI;
 const PORT = process.env.PORT || 3000;
 // what you need to expect to understand client content
 // app.use(bodyParser.urlencoded({ extended: true }));
 // app.use(bodyParser.raw());
-app.use(bodyParser.json());
+app.use(express.json());
 app.use(cors());
 
 app.get("/", function (request,response) {
@@ -24,9 +25,13 @@ app.get("/", function (request,response) {
 app.get("/messages", function (request,response) {
   const client = new mongodb.MongoClient(uri);
   client.connect(() => {
-    const db = 
+    const db = client.db("chat");
+    const collection = db.collection("messages");
+    collection.find().toArray((error,messages) => {
+      response.json(messages);
+      client.close();
+    })
   })
-  res.json(data);
 });
 
 // level 3
