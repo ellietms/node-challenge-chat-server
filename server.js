@@ -181,18 +181,42 @@ app.delete("/messages/:id", (request, response) => {
 });
 
 // level 5
-// add level 5 (put request)
-app.put("/messages/:id", (req, res) => {
-  const { id } = req.params;
-  let updateData = data.find((message) => message.id === id);
-  if (updateData) {
-    updateData.text = req.body.text;
-    updateData.from = req.body.from;
-    res.json(data);
-  } else {
-    res.send(404).status("oops! something went wrong! :(");
-  }
+// Update information by Id;
+app.put("/messages/:id", (request,response) => {
+  const client = new mongodb.MongoClient(uri);
+  client.connect(() => {
+    const db = client.db("chat");
+    const collection = db.collection("messages");
+    const {id} = request.params;
+    let newId;
+    if(mongodb.ObjectID.isValid(id)){
+      newId = new mongodb.ObjectID(id);
+      const searchObject = {_id:newId};
+      const updateObject = {
+        $set:{
+          text:request.body.text,
+          from:request.body.from
+        },
+      };
+      const options={ returnOriginal: false };
+      collection.findOneAndUpdate(searchObject,updateObject,options,(error,result) => {
+        if(error){
+          response.send(error);
+          client.close();
+        }
+        else{
+          response.send(result.value);
+          client.close();
+        }
+      })
+    }
+    else{
+      response.send("oops! something went wrong! :(");
+      client.close();
+    }  
+  })
 });
+ 
 
 app.listen(PORT, () => {
   console.log(`Server started on port: ${PORT}`);
