@@ -1,95 +1,124 @@
-const dotenv =require("dotenv");
+const dotenv = require("dotenv");
 const express = require("express");
 const app = express();
-// const bodyParser = require("body-parser");
 const cors = require("cors");
 const mongodb = require("mongodb");
 dotenv.config();
-const uri =process.env.DATABASE_URI;
+const uri = process.env.DATABASE_URI;
 const PORT = process.env.PORT || 3000;
+app.use(express.json());
+app.use(cors());
 // what you need to expect to understand client content
 // app.use(bodyParser.urlencoded({ extended: true }));
 // app.use(bodyParser.raw());
-app.use(express.json());
-app.use(cors());
 
-app.get("/", function (request,response) {
-  const client = new mongodb.MongoClient(uri)
+app.get("/", function (request, response) {
+  const client = new mongodb.MongoClient(uri);
   client.connect(() => {
     response.send("Ellie your server is working :)");
     client.close();
-  })
+  });
 });
 
 // Read all messages
-app.get("/messages", function (request,response) {
+app.get("/messages", function (request, response) {
   const client = new mongodb.MongoClient(uri);
   client.connect(() => {
     const db = client.db("chat");
     const collection = db.collection("messages");
-    collection.find().toArray((error,messages) => {
-      if(error){
+    collection.find().toArray((error, messages) => {
+      if (error) {
         response.send(error);
         client.close();
+      } else {
+        response.json(messages);
+        client.close();
       }
-      else{
-      response.json(messages);
-      client.close();
-      }
-    })
-  })
+    });
+  });
 });
 
-// level 3
-app.post("/messages/search", (req, res) => {
-  const text = `${req.query.text.toLowerCase()}`;
-  const messageWithSpecificText = data.filter((message) =>
-    message.text.toLowerCase().includes(text)
-  );
-  res.json(messageWithSpecificText);
+// Find specific data with specific text
+app.post("/messages/search", (request, response) => {
+  const client = new mongodb.MongoClient(uri);
+  client.connect(() => {
+    const db = client.db("chat");
+    const collection = db.collection("messages");
+    const text = `${request.query.text.toLowerCase()}`;
+    collection.find().toArray((error, data) => {
+      if (error) {
+        response.send(error);
+        client.close();
+      } else {
+        const messageWithSpecificText = data.filter((message) =>
+          message.text.toLowerCase().includes(text)
+        );
+        response.send(messageWithSpecificText);
+        client.close();
+      }
+    });
+  });
 });
 
-// level 3
-app.get("/messages/latest", (req, res) => {
-  if (data.length >= 10) {
-    const latestMessages = data.slice(data.length - 10, data.length + 1);
-    res.json(latestMessages);
-  } else if (data.length < 10) {
-    res.json(data);
-  } else {
-    res.json("Sorry,you do not have enough message");
-  }
+//find latest data
+app.get("/messages/latest", (request, response) => {
+  const client = new mongodb.MongoClient(uri);
+  client.connect(() => {
+    const db = client.db("chat");
+    const collection = db.collection("messages");
+    collection.find().toArray((error, data) => {
+      if (data.length >= 10) {
+        const latestMessages = data.slice(data.length - 10, data.length + 1);
+        response.send(latestMessages);
+        client.close();
+      } else if (data.length < 10) {
+        response.send(data);
+        client.close();
+      } else {
+        response.send("Sorry,you do not have enough message");
+        client.close();
+      }
+    });
+  });
 });
 
 // increase id
-function NewId(arr) {
-  if (arr.length !== 0) {
-    return Math.max(...Object.values(arr.map((e) => e.id))) + 1;
-  } else {
-    return 0;
-  }
-}
+// function NewId(arr) {
+//   if (arr.length !== 0) {
+//     return Math.max(...Object.values(arr.map((e) => e.id))) + 1;
+//   } else {
+//     return 0;
+//   }
+// }
 
 // Create a new message
-app.post("/messages/newMessage", (req, res) => {
-  // level 2
-  if (req.body.from === "" || req.body.text === "") {
-    res
-      .status(400)
-      .json("Bad request,Please make sure all fields are filled in correctly");
-  } else {
-    let id = NewId(data).toString();
-    data.push({
-      id: id,
-      from: req.body.from,
-      text: req.body.text,
+app.post("/messages/newMessage", (request, response) => {
+  const client = new mongodb.MongoClient(uri);
+  client.connect(() => {
+    const db = client.db("chat");
+    const collection = db.collection("messages");
+    const message = {
+      from: request.body.from,
+      text: request.body.text,
       timeSent: new Date(),
+    };
+    collection.insertOne(message, (error, data) => {
+      if (request.body.from === "" || request.body.text === "") {
+        response
+          .status(400)
+          .send(
+            "Bad request,Please make sure all fields are filled in correctly"
+          );
+        client.close();
+      } else if (error) {
+        response.send(error);
+      } else {
+        response.send(data.ops[0]);
+        client.close();
+      }
     });
-    res.json(data);
-    console.log(data);
-  }
+  });
 });
-
 // read one message specified by an Id
 app.get("/messages/:id", (req, res) => {
   const { id } = req.params;
@@ -118,7 +147,6 @@ app.put("/messages/:id", (req, res) => {
     res.send(404).status("oops! something went wrong! :(");
   }
 });
-
 
 app.listen(PORT, () => {
   console.log(`Server started on port: ${PORT}`);
