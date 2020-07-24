@@ -1,22 +1,31 @@
+require("dotenv").config;
 const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
-let data = require("./data.json");
 const cors = require("cors");
-
+const mongodb = require("mongodb");
+const uri =process.env.DATABASE_URI;
+const PORT = process.env.PORT || 3000;
 // what you need to expect to understand client content
 // app.use(bodyParser.urlencoded({ extended: true }));
 // app.use(bodyParser.raw());
-
 app.use(bodyParser.json());
 app.use(cors());
 
-app.get("/", function (req, res) {
-  res.send("Ellie your server is working :)");
+app.get("/", function (request,response) {
+  const client = new mongodb.MongoClient(uri)
+  client.connect(() => {
+    response.send("Ellie your server is working :)");
+    client.close();
+  })
 });
 
 // Read all messages
-app.get("/messages", function (req, res) {
+app.get("/messages", function (request,response) {
+  const client = new mongodb.MongoClient(uri);
+  client.connect(() => {
+    const db = 
+  })
   res.json(data);
 });
 
@@ -99,7 +108,7 @@ app.put("/messages/:id", (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 3000;
+
 app.listen(PORT, () => {
   console.log(`Server started on port: ${PORT}`);
 });
