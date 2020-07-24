@@ -153,11 +153,31 @@ app.get("/messages/:id", (request, response) => {
 });
 
 // Delete a message by Id
-app.delete("/messages/:id", (req, res) => {
-  const { id } = req.params;
-  console.log("the id is :", id, typeof id, JSON.stringify(data));
-  data = data.filter((message) => message.id !== id);
-  res.json(data);
+app.delete("/messages/:id", (request, response) => {
+  const client = new mongodb.MongoClient(uri,{useUnifiedTopology: true});
+  client.connect(() => {
+    const db = client.db("chat");
+    const collection = db.collection("messages");
+    const { id } = request.params;
+    let newId;
+    if(mongodb.ObjectID.isValid(id)){
+      newId = mongodb.ObjectID(id);
+      collection.deleteOne({_id:newId},(error,data) => {
+        if(error){
+          response.send(error);
+          client.close();
+        }
+        else{
+          response.send("Successfully removed");
+          client.close();
+        }
+      })
+    }
+    else{
+      response.send("ID is not valid");
+      client.close();
+    }
+  })
 });
 
 // level 5
