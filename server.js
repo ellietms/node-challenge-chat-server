@@ -28,8 +28,14 @@ app.get("/messages", function (request,response) {
     const db = client.db("chat");
     const collection = db.collection("messages");
     collection.find().toArray((error,messages) => {
+      if(error){
+        response.send(error);
+        client.close();
+      }
+      else{
       response.json(messages);
       client.close();
+      }
     })
   })
 });
