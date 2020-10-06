@@ -1,15 +1,15 @@
 const dotenv = require("dotenv");
+dotenv.config();
 const express = require("express");
 const app = express();
 const cors = require("cors");
 const mongodb = require("mongodb");
-dotenv.config();
 const uri = process.env.DATABASE_URI;
 const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(cors());
 // what you need to expect to understand client content
-// app.use(bodyParser.urlencoded({ extended: true }));
+//  app.use(bodyParser.urlencoded({ extended: true }));
 // app.use(bodyParser.raw());
 
 // increase id
