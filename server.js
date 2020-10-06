@@ -5,7 +5,7 @@ const app = express();
 const cors = require("cors");
 const mongodb = require("mongodb");
 const uri = process.env.DATABASE_URI;
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT;
 app.use(express.json());
 app.use(cors());
 // what you need to expect to understand client content
@@ -100,7 +100,7 @@ app.post("/messages/newMessage", (request, response) => {
     const message = {
       from: request.body.from,
       text: request.body.text,
-      timeSent: new Date()
+      timeSent: new Date(),
     };
     collection.insertOne(message, (error, data) => {
       if (request.body.from === "" || request.body.text === "") {
@@ -110,12 +110,10 @@ app.post("/messages/newMessage", (request, response) => {
             "Bad request,Please make sure all fields are filled in correctly"
           );
         client.close();
-      }
-      else if (error) {
+      } else if (error) {
         response.send(error);
         client.close();
-      }
-      else {
+      } else {
         response.send(data.ops[0]);
         client.close();
       }
@@ -131,93 +129,92 @@ app.get("/messages/:id", (request, response) => {
     const collection = db.collection("messages");
     const { id } = request.params;
     let newId;
-    if(mongodb.ObjectID.isValid(id)){
-     newId = mongodb.ObjectID(id);
-     console.log("TYPE",typeof newId);
-     collection.findOne({_id:newId},(error,data) => {
-      if(error){
-        response.send(error);
-        client.close();
-      }
-      else{
-        console.log("DATA" , data)
-        response.send(data);
-        client.close();
-      }
-    })
-  }
-  else{
-    response.send("Id is not Valid");
-    client.close();
-  }
-  })
+    if (mongodb.ObjectID.isValid(id)) {
+      newId = mongodb.ObjectID(id);
+      console.log("TYPE", typeof newId);
+      collection.findOne({ _id: newId }, (error, data) => {
+        if (error) {
+          response.send(error);
+          client.close();
+        } else {
+          console.log("DATA", data);
+          response.send(data);
+          client.close();
+        }
+      });
+    } else {
+      response.send("Id is not Valid");
+      client.close();
+    }
+  });
 });
 
 // Delete a message by Id
 app.delete("/messages/:id", (request, response) => {
-  const client = new mongodb.MongoClient(uri,{useUnifiedTopology: true});
+  const client = new mongodb.MongoClient(uri, { useUnifiedTopology: true });
   client.connect(() => {
     const db = client.db("chat");
     const collection = db.collection("messages");
     const { id } = request.params;
     let newId;
-    if(mongodb.ObjectID.isValid(id)){
+    if (mongodb.ObjectID.isValid(id)) {
       newId = mongodb.ObjectID(id);
-      collection.deleteOne({_id:newId},(error,data) => {
-        if(error){
+      console.log(newId);
+      collection.deleteOne({ _id: newId }, (error, data) => {
+        if (error) {
           response.send(error);
           client.close();
-        }
-        else{
+        } else {
           response.send("Successfully removed");
           client.close();
         }
-      })
-    }
-    else{
+      });
+    } else {
       response.send("ID is not valid");
       client.close();
     }
-  })
+  });
 });
 
 // level 5
 // Update information by Id;
-app.put("/messages/:id", (request,response) => {
+app.put("/messages/:id", (request, response) => {
   const client = new mongodb.MongoClient(uri);
   client.connect(() => {
     const db = client.db("chat");
     const collection = db.collection("messages");
-    const {id} = request.params;
+    const { id } = request.params;
     let newId;
-    if(mongodb.ObjectID.isValid(id)){
+    if (mongodb.ObjectID.isValid(id)) {
       newId = new mongodb.ObjectID(id);
-      const searchObject = {_id:newId};
+      const searchObject = { _id: newId };
       const updateObject = {
-        $set:{
-          text:request.body.text,
-          from:request.body.from
+        $set: {
+          text: request.body.text,
+          from: request.body.from,
         },
       };
-      const options={ returnOriginal: false };
-      collection.findOneAndUpdate(searchObject,updateObject,options,(error,result) => {
-        if(error){
-          response.send(error);
-          client.close();
+      const options = { returnOriginal: false };
+      collection.findOneAndUpdate(
+        searchObject,
+        updateObject,
+        options,
+        (error, result) => {
+          if (error) {
+            response.send(error);
+            client.close();
+          } else {
+            response.send(result.value);
+            client.close();
+          }
         }
-        else{
-          response.send(result.value);
-          client.close();
-        }
-      })
-    }
-    else{
+      );
+    } else {
       response.send("oops! something went wrong! :(");
       client.close();
-    }  
-  })
+    }
+  });
 });
- 
 
 app.listen(PORT, () => {
   console.log(`Server started on port: ${PORT}`);
